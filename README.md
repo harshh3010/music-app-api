@@ -8,5 +8,5 @@ Create a config.env file in project's root directory to store environment variab
 >SERVER_PORT=8000
 >
 >DATABASE_URL_LOCAL=mongodb://localhost:27017/music-app
->USERNAME=<your-username-here>
->PASSWORD=<your-password-here>
+>USERNAME=YOUR_USERNAME_HERE
+>PASSWORD=YOUR_PASSWORD_HERE
