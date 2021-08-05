@@ -1,0 +1,50 @@
+// User
+id
+name
+age
+gender
+email
+password
+passwordChangedAt
+passwordResetToken
+passwordResetExpiresAt
+
+// Song
+id
+name
+genre
+language
+albumId
+artistId
+coverImageUrl
+songUrl
+lyricsUrl
+releasedAt
+rating
+
+// Artist
+id
+name
+bio
+coverImageUrl
+rating
+
+// Album
+id
+name
+coverImageUrl
+rating
+
+// History
+id
+songId
+userId
+lastPlayedAt
+
+// Playlists
+id
+name
+type (liked, private, public)
+songs
+createdBy
+createdAt

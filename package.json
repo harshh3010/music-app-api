@@ -1,0 +1,22 @@
+{
+    "name": "music-app",
+    "version": "1.0.0",
+    "description": "Music app api",
+    "main": "index.js",
+    "scripts": {
+        "start:dev": "nodemon server.js",
+        "start:prod": "SET NODE_ENV=production & nodemon server.js"
+    },
+    "author": "Harsh Gyanchandani",
+    "license": "ISC",
+    "devDependencies": {
+        "nodemon": "^2.0.12"
+    },
+    "dependencies": {
+        "dotenv": "^10.0.0",
+        "express": "^4.17.1",
+        "mongoose": "^5.13.5",
+        "morgan": "^1.10.0",
+        "validator": "^13.6.0"
+    }
+}
