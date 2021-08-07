@@ -49,6 +49,10 @@ const userSchema = mongoose.Schema({
     passwordResetExpiresAt: Date
 });
 
+userSchema.methods.checkPassword = async function(candidatePassword, userPassword) {
+    return await bcrypt.compare(candidatePassword, userPassword);
+}
+
 userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {
         return next();
