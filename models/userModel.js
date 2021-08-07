@@ -55,7 +55,6 @@ userSchema.methods.checkPassword = async function(candidatePassword, userPasswor
 }
 
 userSchema.methods.generatePasswordResetToken = function() {
-
     const resetToken = crypto.randomBytes(32).toString('hex');
 
     this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
@@ -63,6 +62,26 @@ userSchema.methods.generatePasswordResetToken = function() {
 
     return resetToken;
 }
+
+userSchema.methods.changedPassword = function(JWTTimestamp) {
+    if (this.passwordChangedAt) {
+        const changedTime = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+        return JWTTimestamp < changedTime;
+    }
+
+    return false;
+}
+
+userSchema.pre('save', function(next) {
+    if (!this.isModified('password') || this.isNew) {
+        return next();
+    }
+
+    // -2000 is to ensure that the jwt issue time is always more than password change time
+    this.passwordChangedAt = Date.now() - 2000;
+
+    next();
+});
 
 userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {

@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 
 const AppError = require('./../utilities/appError');
 const User = require('./../models/userModel');
@@ -89,9 +90,7 @@ exports.verifyEmail = catchAsync(async(req, res, next) => {
     res.status(200).json({
         status: 'success',
         message: 'You have been registered successfully!',
-        data: {
-            token: token
-        }
+        token: token
     });
 });
 
@@ -222,8 +221,41 @@ exports.resetPassword = catchAsync(async(req, res, next) => {
     res.status(200).json({
         status: 'success',
         message: 'Password reset successful! You have been logged in.',
-        data: {
-            token: token
-        }
+        token: token
     });
+});
+
+// Middleware to protect the routes such that they can be accessed by authorized users only
+exports.protectRoute = catchAsync(async(req, res, next) => {
+
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+        return next(new AppError('You are currently not logged in! Please login to continue.', 401));
+    }
+
+    // Decoding the jwt
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+    // Obtain the user corresponding to the jwt token
+    const currentUser = await User.findById(decoded.id);
+
+    // Report error if user does not exist
+    if (!currentUser) {
+        return next(new AppError('The user corresponding to the token no longer exist!', 401));
+    }
+
+    // Check if the token was issued before user changed the password
+    if (currentUser.changedPassword(decoded.iat)) {
+        return next(new AppError('The user recently changed the password, please login again!', 401));
+    }
+
+    // Store user info in request object as it may be required later
+    req.user = currentUser;
+
+    // Grant access to the route
+    next();
 });

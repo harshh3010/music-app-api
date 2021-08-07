@@ -19,4 +19,9 @@ router.post('/forgotPassword', authController.forgotPassword);
 // Reset password request
 router.post('/resetPassword/:passwordResetToken', authController.resetPassword);
 
+// FOR TESTING PURPOSE
+router.route('/').get(authController.protectRoute, (req, res, next) => {
+    res.status(200).send('Hello');
+});
+
 module.exports = router;
