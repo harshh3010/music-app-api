@@ -5,7 +5,6 @@ const AppError = require('./../utilities/appError');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utilities/catchAsync');
 const sendMail = require('./../utilities/email');
-const { userInfo } = require('os');
 
 // Function to issue a jwt when a user with given id is logged in
 const signIn = (id) => {
@@ -157,4 +156,74 @@ exports.login = catchAsync(async(req, res, next) => {
         });
     }
 
+});
+
+// Function to send a password reset link to user
+exports.forgotPassword = catchAsync(async(req, res, next) => {
+
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+        return next(new AppError('User does not exist!', 400));
+    }
+
+    const passwordResetToken = user.generatePasswordResetToken();
+    await user.save({ validateBeforeSave: false });
+
+    const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/resetPassword/${passwordResetToken}`;
+    const message = `Post on this url to reset your password.\n${resetUrl}`;
+
+    try {
+
+        // Sending the email to the user
+        await sendMail({
+            email: user.email,
+            subject: 'Music-App password reset',
+            message: message
+        });
+
+        res.status(200).json({
+            status: 'success',
+            message: 'The password reset link has been sent to your email address!'
+        });
+
+    } catch (err) {
+
+        user.passwordResetToken = undefined;
+        user.passwordResetExpiresAt = undefined;
+        await user.save();
+
+        return next(new AppError('Some problem occurred! Try again later.', 500));
+    }
+});
+
+// Function to reset the user password
+exports.resetPassword = catchAsync(async(req, res, next) => {
+
+    const resetToken = crypto.createHash('sha256').update(req.params.passwordResetToken).digest('hex');
+
+    const user = await User.findOne({
+        email: req.body.email,
+        passwordResetToken: resetToken,
+        passwordResetExpiresAt: { $gt: Date.now() }
+    });
+
+    if (!user) {
+        return next(new AppError('Invalid user or token!', 400));
+    }
+
+    user.password = req.body.password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpiresAt = undefined;
+
+    await user.save();
+
+    const token = signIn(user._id);
+
+    res.status(200).json({
+        status: 'success',
+        message: 'Password reset successful! You have been logged in.',
+        data: {
+            token: token
+        }
+    });
 });

@@ -13,4 +13,10 @@ router.post('/verifyEmail/:verificationToken', authController.verifyEmail);
 // Login request
 router.post('/login', authController.login);
 
+// Forgot password request
+router.post('/forgotPassword', authController.forgotPassword);
+
+// Reset password request
+router.post('/resetPassword/:passwordResetToken', authController.resetPassword);
+
 module.exports = router;
