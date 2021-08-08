@@ -3,6 +3,7 @@ const morgan = require('morgan');
 
 const AppError = require('./utilities/appError');
 const userRoutes = require('./routes/userRoutes');
+const songRoutes = require('./routes/songRoutes');
 const errorHandler = require('./controllers/errorController');
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.json());
 
 // Creating all routes
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/songs', songRoutes);
 
 app.all('*', (req, res, next) => {
     next(new AppError('This route is not defined!', 404));

@@ -22,7 +22,7 @@ const userSchema = mongoose.Schema({
         required: [true, 'A user must have a gender.'],
         enum: {
             values: ['male', 'female', 'other'],
-            message: ['Gender must be either male, female or other.']
+            message: 'Gender must be either male, female or other.'
         }
     },
     email: {
@@ -42,6 +42,14 @@ const userSchema = mongoose.Schema({
     isVerified: {
         type: Boolean,
         default: false
+    },
+    role: {
+        type: String,
+        enum: {
+            values: ['admin', 'user'],
+            message: 'Role must be either admin or user.'
+        },
+        default: 'user'
     },
     emailVerificationToken: String,
     emailVerificationExpiresAt: Date,
