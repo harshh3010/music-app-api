@@ -56,13 +56,13 @@ exports.addSong = catchAsync(async(req, res, next) => {
     // Save the audio file in app-data directory
     let audioPath = `${path.resolve('./')}/app-data/songs/audio/${songId}${audioFileExtension}`.replace(/\\/g, '/');
     audioFile.mv(audioPath);
-    newSong.songUrl = audioPath;
+    newSong.songUrl = `${req.protocol}://${req.get('host')}/api/v1/songs/play/${songId}${audioFileExtension}`;
 
     // Save the lyrics file in app-data directory
     if (lyricsFile) {
         let lyricsPath = `${path.resolve('./')}/app-data/songs/lyrics/${songId}${lyricsFileExtension}`.replace(/\\/g, '/');
         lyricsFile.mv(lyricsPath);
-        newSong.lyricsUrl = lyricsPath;
+        newSong.lyricsUrl = `${req.protocol}://${req.get('host')}/api/v1/songs/lyrics/${songId}${lyricsFileExtension}`;
     }
 
     // Save the cover image in app-data directory
@@ -71,8 +71,8 @@ exports.addSong = catchAsync(async(req, res, next) => {
     if (coverImage) {
         imageName = `${songId}${imageFileExtension}`;
         coverImage.mv(imagePath + imageName);
+        newSong.coverImageUrl = `${req.protocol}://${req.get('host')}/api/v1/songs/cover/${songId}${imageFileExtension}`;
     }
-    newSong.coverImageUrl = `${imagePath}${imageName}`;
 
     // Save the file paths to database
     await newSong.save();
