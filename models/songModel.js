@@ -47,6 +47,13 @@ const songSchema = mongoose.Schema({
     releasedAt: Date
 });
 
+songSchema.pre('save', function(next) {
+    if (this.isNew) {
+        this.releasedAt = this.releasedAt || Date.now();
+    }
+    next();
+});
+
 const Song = mongoose.model('Song', songSchema);
 
 module.exports = Song;

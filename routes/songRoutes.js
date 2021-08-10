@@ -9,6 +9,10 @@ const router = express.Router();
 // Add song route
 // Accessible by logged in admins only
 router.route('/')
+    .get(
+        authController.protectRoute,
+        songController.getAllSongs
+    )
     .post(
         authController.protectRoute,
         authController.restrictTo('admin'),
@@ -17,9 +21,8 @@ router.route('/')
 
 router.route('/play/:songId')
     .get(
-        // authController.protectRoute,
+        authController.protectRoute,
         mediaController.playMusic
     );
-
 
 module.exports = router;
