@@ -5,6 +5,8 @@ const morgan = require('morgan');
 const AppError = require('./utilities/appError');
 const userRoutes = require('./routes/userRoutes');
 const songRoutes = require('./routes/songRoutes');
+const artistRoutes = require('./routes/artistRoutes');
+const albumRoutes = require('./routes/albumRoutes');
 const errorHandler = require('./controllers/errorController');
 
 const app = express();
@@ -23,6 +25,8 @@ app.use(upload());
 // Creating all routes
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/songs', songRoutes);
+app.use('/api/v1/artists', artistRoutes);
+app.use('/api/v1/albums', albumRoutes);
 
 app.all('*', (req, res, next) => {
     next(new AppError('This route is not defined!', 404));

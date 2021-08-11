@@ -141,3 +141,15 @@ exports.getAllSongs = catchAsync(async(req, res, next) => {
     });
 
 });
+
+// Function to get a song with given id
+exports.getSongWithId = catchAsync(async(req, res, next) => {
+    const song = await Song.findById(req.params.songId);
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            song: song
+        }
+    });
+});

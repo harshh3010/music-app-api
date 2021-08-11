@@ -19,10 +19,22 @@ router.route('/')
         songController.addSong
     );
 
+router.route('/:songId')
+    .get(
+        authController.protectRoute,
+        songController.getSongWithId
+    );
+
 router.route('/play/:songId')
     .get(
         authController.protectRoute,
         mediaController.playMusic
+    );
+
+router.route('/cover/:imageFile')
+    .get(
+        authController.protectRoute,
+        mediaController.getCoverImage
     );
 
 module.exports = router;
