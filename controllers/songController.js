@@ -2,6 +2,7 @@ const path = require('path');
 
 const Song = require('./../models/songModel');
 const AppError = require('./../utilities/appError');
+const DBFeatures = require('./../utilities/dbFeatures');
 const catchAsync = require('./../utilities/catchAsync');
 const allowedAudioFormats = require('./../utilities/allowedAudioFormats');
 const allowedLyricsFormats = require('./../utilities/allowedLyricsFormats');
@@ -66,11 +67,9 @@ exports.addSong = catchAsync(async(req, res, next) => {
     }
 
     // Save the cover image in app-data directory
-    let imagePath = `${path.resolve('./')}/app-data/songs/coverImages/`.replace(/\\/g, '/');
-    let imageName = 'unknown.jpg';
     if (coverImage) {
-        imageName = `${songId}${imageFileExtension}`;
-        coverImage.mv(imagePath + imageName);
+        let imagePath = `${path.resolve('./')}/app-data/songs/coverImages/${songId}${imageFileExtension}`.replace(/\\/g, '/');
+        coverImage.mv(imagePath);
         newSong.coverImageUrl = `${req.protocol}://${req.get('host')}/api/v1/songs/cover/${songId}${imageFileExtension}`;
     }
 
@@ -87,50 +86,58 @@ exports.addSong = catchAsync(async(req, res, next) => {
 // Function to get all songs from database
 exports.getAllSongs = catchAsync(async(req, res, next) => {
 
-    let queryObj = {...req.query };
+    // let queryObj = {...req.query };
 
-    // Removing the queries which cannot be applied to mongodb find object
-    const excludedQueries = ['page', 'limit', 'sort', 'fields'];
-    excludedQueries.forEach((query) => {
-        delete queryObj[query];
-    });
+    // // Removing the queries which cannot be applied to mongodb find object
+    // const excludedQueries = ['page', 'limit', 'sort', 'fields'];
+    // excludedQueries.forEach((query) => {
+    //     delete queryObj[query];
+    // });
 
-    // Handling queries with inequalities
-    //
-    // Eg - 
-    // Object recieved will be { rating: { gt: 3.0 } }, and that accepted by mongoose will be { rating: { $gt: 3.0 }}
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\bgt|gte|lt|lte\b/g, (match) => {
-        return `$${match}`;
-    });
-    queryObj = JSON.parse(queryStr);
+    // // Handling queries with inequalities
+    // //
+    // // Eg - 
+    // // Object recieved will be { rating: { gt: 3.0 } }, and that accepted by mongoose will be { rating: { $gt: 3.0 }}
+    // let queryStr = JSON.stringify(queryObj);
+    // queryStr = queryStr.replace(/\bgt|gte|lt|lte\b/g, (match) => {
+    //     return `$${match}`;
+    // });
+    // queryObj = JSON.parse(queryStr);
 
-    let query = Song.find(queryObj);
+    // let query = Song.find(queryObj);
 
-    // Sorting the data
-    if (req.query.sort) {
-        let sortBy = req.query.sort.split(',').join(' ');
-        query = query.sort(sortBy);
-    } else {
-        query = query.sort('-releasedAt');
-    }
+    // // Sorting the data
+    // if (req.query.sort) {
+    //     let sortBy = req.query.sort.split(',').join(' ');
+    //     query = query.sort(sortBy);
+    // } else {
+    //     query = query.sort('-releasedAt');
+    // }
 
-    // Selecting specific fields of data
-    if (req.query.fields) {
-        let fields = req.query.fields.split(',').join(' ');
-        query = query.select(fields);
-    } else {
-        query = query.select('-__v');
-    }
+    // // Selecting specific fields of data
+    // if (req.query.fields) {
+    //     let fields = req.query.fields.split(',').join(' ');
+    //     query = query.select(fields);
+    // } else {
+    //     query = query.select('-__v');
+    // }
 
-    // Implementing pagination
-    let page = req.query.page * 1 || 1;
-    let limit = req.query.limit * 1 || 20;
-    let skip = (page - 1) * limit;
+    // // Implementing pagination
+    // let page = req.query.page * 1 || 1;
+    // let limit = req.query.limit * 1 || 20;
+    // let skip = (page - 1) * limit;
 
-    query = query.skip(skip).limit(limit);
+    // query = query.skip(skip).limit(limit);
 
-    songs = await query;
+    // songs = await query;
+
+    const dbFeatures = new DBFeatures(Song.find(), req.query)
+        .filter()
+        .sort()
+        .filterFields()
+        .paginate();
+
+    songs = await dbFeatures.dbQuery;
 
     res.status(200).json({
         status: 'success',

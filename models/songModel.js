@@ -39,7 +39,7 @@ const songSchema = mongoose.Schema({
         type: Number,
         min: [0, 'Rating must be at least 0.'],
         max: [5, 'Rating cannot exceed 5.'],
-        default: 0
+        default: 0.0
     },
     coverImageUrl: String,
     songUrl: String,
