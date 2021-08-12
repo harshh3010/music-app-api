@@ -34,7 +34,7 @@ router.route('/play/:songId')
 router.route('/cover/:imageFile')
     .get(
         authController.protectRoute,
-        mediaController.getCoverImage
+        mediaController.getSongCover
     );
 
 module.exports = router;

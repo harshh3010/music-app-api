@@ -1,14 +1,28 @@
 const path = require('path');
 
 const Artist = require('./../models/artistModel');
+const DBFeatures = require('./../utilities/dbFeatures');
 const catchAsync = require('./../utilities/catchAsync');
 const allowedImageFormats = require('./../utilities/allowedImageFormats');
 
 exports.getAllArtists = catchAsync(async(req, res, next) => {
+
+    const dbFeatures = new DBFeatures(Artist.find(), req.query)
+        .filter()
+        .sort()
+        .filterFields()
+        .paginate();
+
+    const artists = await dbFeatures.dbQuery;
+
     res.status(200).json({
         status: 'success',
-        message: 'Get all artists'
-    });
+        result: artists.length,
+        data: {
+            artists: artists
+        }
+    })
+
 });
 
 // Function to add a new artist to the server

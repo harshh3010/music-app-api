@@ -1,14 +1,28 @@
 const path = require('path');
 
 const Album = require('./../models/albumModel');
+const DBFeatures = require('./../utilities/dbFeatures');
 const catchAsync = require('./../utilities/catchAsync');
 const allowedImageFormats = require('./../utilities/allowedImageFormats');
 
 exports.getAllAlbums = catchAsync(async(req, res, next) => {
+
+    const dbFeatures = new DBFeatures(Album.find(), req.query)
+        .filter()
+        .sort()
+        .filterFields()
+        .paginate();
+
+    const albums = await dbFeatures.dbQuery;
+
     res.status(200).json({
         status: 'success',
-        message: 'Get all albums'
+        result: albums.length,
+        data: {
+            albums: albums
+        }
     });
+
 });
 
 // Function to add a new album to the server

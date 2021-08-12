@@ -42,9 +42,35 @@ exports.playMusic = catchAsync(async(req, res, next) => {
 
 });
 
-exports.getCoverImage = catchAsync(async(req, res, next) => {
+exports.getSongCover = catchAsync(async(req, res, next) => {
 
     const coverImage = `${path.resolve('./')}/app-data/songs/coverImages/${req.params.imageFile}`.replace('/\\/g', '/');
+    fs.exists(coverImage, (exists) => {
+        if (exists) {
+            res.status(200).sendFile(coverImage);
+        } else {
+            return next(new AppError('File not found!', 404));
+        }
+    });
+
+});
+
+exports.getArtistCover = catchAsync(async(req, res, next) => {
+
+    const coverImage = `${path.resolve('./')}/app-data/artists/coverImages/${req.params.imageFile}`.replace('/\\/g', '/');
+    fs.exists(coverImage, (exists) => {
+        if (exists) {
+            res.status(200).sendFile(coverImage);
+        } else {
+            return next(new AppError('File not found!', 404));
+        }
+    });
+
+});
+
+exports.getAlbumCover = catchAsync(async(req, res, next) => {
+
+    const coverImage = `${path.resolve('./')}/app-data/albums/coverImages/${req.params.imageFile}`.replace('/\\/g', '/');
     fs.exists(coverImage, (exists) => {
         if (exists) {
             res.status(200).sendFile(coverImage);
