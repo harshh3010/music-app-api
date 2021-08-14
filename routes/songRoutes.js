@@ -9,32 +9,16 @@ const router = express.Router();
 // Add song route
 // Accessible by logged in admins only
 router.route('/')
-    .get(
-        authController.protectRoute,
-        songController.getAllSongs
-    )
-    .post(
-        authController.protectRoute,
-        authController.restrictTo('admin'),
-        songController.addSong
-    );
+    .get(authController.protectRoute, songController.getAllSongs)
+    .post(authController.protectRoute, authController.restrictTo('admin'), songController.addSong);
 
 router.route('/:songId')
-    .get(
-        authController.protectRoute,
-        songController.getSongWithId
-    );
+    .get(authController.protectRoute, songController.getSongWithId);
 
 router.route('/play/:songId')
-    .get(
-        authController.protectRoute,
-        mediaController.playMusic
-    );
+    .get(authController.protectRoute, mediaController.playMusic);
 
 router.route('/cover/:imageFile')
-    .get(
-        authController.protectRoute,
-        mediaController.getSongCover
-    );
+    .get(authController.protectRoute, mediaController.getSongCover);
 
 module.exports = router;
