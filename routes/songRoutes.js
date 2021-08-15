@@ -13,7 +13,9 @@ router.route('/')
     .post(authController.protectRoute, authController.restrictTo('admin'), songController.addSong);
 
 router.route('/:songId')
-    .get(authController.protectRoute, songController.getSongWithId);
+    .get(authController.protectRoute, songController.getSongWithId)
+    .patch(authController.protectRoute, authController.restrictTo('admin'), songController.updateSong)
+    .delete(authController.protectRoute, authController.restrictTo('admin'), songController.deleteSong);
 
 router.route('/play/:songId')
     .get(authController.protectRoute, mediaController.playMusic);

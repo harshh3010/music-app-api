@@ -10,6 +10,14 @@ router.route('/')
     .post(authController.protectRoute, playlistController.createPlaylist);
 
 router.route('/:playlistId')
-    .get(authController.protectRoute, playlistController.getPlaylistById);
+    .get(authController.protectRoute, playlistController.getPlaylistById)
+    .patch(authController.protectRoute, playlistController.updatePlaylist)
+    .delete(authController.protectRoute, playlistController.deletePlaylist);
+
+router.route('/:playlistId/addSongs')
+    .patch(authController.protectRoute, playlistController.addSongsToPlaylist);
+
+router.route('/:playlistId/removeSongs')
+    .patch(authController.protectRoute, playlistController.removeSongsFromPlaylist);
 
 module.exports = router;

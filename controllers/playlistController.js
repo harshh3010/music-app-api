@@ -39,7 +39,8 @@ exports.getPlaylistById = catchAsync(async(req, res, next) => {
         // TODO: change select fields
 
         path: 'songs',
-        select: '-__v'
+        model: 'Song',
+        select: '-__v -artistIds'
     });
 
     if (!playlist) {
@@ -69,6 +70,108 @@ exports.createPlaylist = catchAsync(async(req, res, next) => {
     res.status(201).json({
         status: 'success',
         message: 'Playlist created successfully!',
+        data: {
+            playlist: playlist
+        }
+    });
+
+});
+
+exports.updatePlaylist = catchAsync(async(req, res, next) => {
+
+    const playlist = await Playlist.findOneAndUpdate({
+        _id: req.params.playlistId,
+        createdBy: req.user._id
+    }, req.body, {
+        new: true,
+        runValidators: true
+    });
+
+    if (!playlist) {
+        return next(new AppError('Playlist not found!', 404));
+    }
+
+    res.status(201).json({
+        status: 'success',
+        message: 'Playlist updated successfully!',
+        data: {
+            playlist: playlist
+        }
+    });
+
+});
+
+exports.deletePlaylist = catchAsync(async(req, res, next) => {
+
+    const playlist = await Playlist.findOneAndDelete({
+        _id: req.params.playlistId,
+        createdBy: req.user._id
+    });
+
+    if (!playlist) {
+        return next(new AppError('Playlist not found!', 404));
+    }
+
+    res.status(204).json({
+        status: 'success',
+        message: 'Playlist deleted successfully!'
+    });
+
+});
+
+exports.addSongsToPlaylist = catchAsync(async(req, res, next) => {
+
+    const playlist = await Playlist.findOneAndUpdate({
+        _id: req.params.playlistId,
+        createdBy: req.user._id
+    }, {
+        $addToSet: {
+            songs: {
+                $each: req.body.songs
+            }
+        }
+    }, {
+        new: true,
+        runValidators: true
+    });
+
+    if (!playlist) {
+        return next(new AppError('Playlist not found!', 404));
+    }
+
+    res.status(201).json({
+        status: 'success',
+        message: 'Playlist updated successfully!',
+        data: {
+            playlist: playlist
+        }
+    });
+
+});
+
+exports.removeSongsFromPlaylist = catchAsync(async(req, res, next) => {
+
+    const playlist = await Playlist.findOneAndUpdate({
+        _id: req.params.playlistId,
+        createdBy: req.user._id
+    }, {
+        $pull: {
+            songs: {
+                $in: req.body.songs
+            }
+        }
+    }, {
+        new: true,
+        runValidators: true
+    });
+
+    if (!playlist) {
+        return next(new AppError('Playlist not found!', 404));
+    }
+
+    res.status(201).json({
+        status: 'success',
+        message: 'Playlist updated successfully!',
         data: {
             playlist: playlist
         }

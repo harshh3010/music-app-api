@@ -28,7 +28,13 @@ exports.getAllArtists = catchAsync(async(req, res, next) => {
 // Function to add a new artist to the server
 exports.addArtist = catchAsync(async(req, res, next) => {
 
-    const newArtist = await Artist.create(req.body);
+    const artistObj = {
+        name: req.body.name,
+        bio: req.body.bio,
+        rating: 0.0
+    };
+
+    const newArtist = await Artist.create(artistObj);
 
     let artistId = newArtist._id;
 
@@ -56,4 +62,43 @@ exports.addArtist = catchAsync(async(req, res, next) => {
         }
     });
 
+});
+
+exports.updateArtist = catchAsync(async(req, res, next) => {
+
+    // TODO: Implement cover image update
+
+    const artist = await Artist.findByIdAndUpdate(req.params.artistId, req.body, {
+        new: true,
+        runValidators: true
+    });
+
+    if (!artist) {
+        return next(new AppError('Artist not found!', 404));
+    }
+
+    res.status(201).json({
+        status: 'success',
+        message: 'Artist updated successfully!',
+        data: {
+            artist: artist
+        }
+    });
+});
+
+exports.deleteArtist = catchAsync(async(req, res, next) => {
+
+    // TODO: Delete artist data from app-data
+    // TODO: Remove artistIds from song docs when corresponding artists are not present
+
+    const artist = await Artist.findByIdAndDelete(req.params.artistId);
+
+    if (!artist) {
+        return next(new AppError('Artist not found!', 404));
+    }
+
+    res.status(204).json({
+        status: 'success',
+        message: 'Artist deleted successfully!'
+    });
 });

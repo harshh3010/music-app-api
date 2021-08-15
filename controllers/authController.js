@@ -24,8 +24,16 @@ exports.signUp = catchAsync(async(req, res, next) => {
     req.body.emailVerificationToken = emailVerificationToken;
     req.body.emailVerificationExpiresAt = Date.now() + 10 * 60 * 1000;
 
+    const userObj = {
+        name: req.body.name,
+        age: req.body.age,
+        gender: req.body.gender,
+        email: req.body.email,
+        password: req.body.password
+    };
+
     // Create a new user using request body
-    const newUser = await User.create(req.body);
+    const newUser = await User.create(userObj);
 
     // Create a verification url
     const verificationUrl = `${req.protocol}://${req.get('host')}/api/v1/users/verifyEmail/${emailVerificationToken}`;

@@ -10,6 +10,10 @@ router.route('/')
     .get(authController.protectRoute, albumController.getAllAlbums)
     .post(authController.protectRoute, authController.restrictTo('admin'), albumController.addAlbum);
 
+router.route('/:albumId')
+    .patch(authController.protectRoute, authController.restrictTo('admin'), albumController.updateAlbum)
+    .delete(authController.protectRoute, authController.restrictTo('admin'), albumController.deleteAlbum);
+
 router.route('/cover/:imageFile')
     .get(authController.protectRoute, mediaController.getAlbumCover);
 

@@ -28,7 +28,12 @@ exports.getAllAlbums = catchAsync(async(req, res, next) => {
 // Function to add a new album to the server
 exports.addAlbum = catchAsync(async(req, res, next) => {
 
-    const newAlbum = await Album.create(req.body);
+    const albumObj = {
+        name: req.body.name,
+        rating: 0.0
+    };
+
+    const newAlbum = await Album.create(albumObj);
 
     let albumId = newAlbum._id;
 
@@ -56,4 +61,43 @@ exports.addAlbum = catchAsync(async(req, res, next) => {
         }
     });
 
+});
+
+exports.updateAlbum = catchAsync(async(req, res, next) => {
+
+    // TODO: Implement cover image update
+
+    const album = await Album.findByIdAndUpdate(req.params.albumId, req.body, {
+        new: true,
+        runValidators: true
+    });
+
+    if (!album) {
+        return next(new AppError('Album not found!', 404));
+    }
+
+    res.status(201).json({
+        status: 'success',
+        message: 'Album updated successfully!',
+        data: {
+            album: album
+        }
+    });
+});
+
+exports.deleteAlbum = catchAsync(async(req, res, next) => {
+
+    // TODO: Delete album data from app-data
+    // TODO: Remove albumIds from song docs when corresponding albums are not present
+
+    const album = await Album.findByIdAndDelete(req.params.albumId);
+
+    if (!album) {
+        return next(new AppError('Album not found!', 404));
+    }
+
+    res.status(204).json({
+        status: 'success',
+        message: 'Album deleted successfully!'
+    });
 });

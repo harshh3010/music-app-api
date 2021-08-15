@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 
+function maxPlaylistSize(val) {
+    return val.length <= 100;
+}
+
 const playlistSchema = mongoose.Schema({
     name: {
         type: String,
@@ -15,10 +19,13 @@ const playlistSchema = mongoose.Schema({
             message: 'A playlist must be of one of the following types: liked, public, private'
         }
     },
-    songs: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Song'
-    }],
+    songs: {
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Song'
+        }],
+        validate: [maxPlaylistSize, 'Playlist is full!']
+    },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

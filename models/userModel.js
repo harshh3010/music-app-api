@@ -51,6 +51,7 @@ const userSchema = mongoose.Schema({
         },
         default: 'user'
     },
+    createdAt: Date,
     emailVerificationToken: String,
     emailVerificationExpiresAt: Date,
     passwordChangedAt: Date,
@@ -79,6 +80,13 @@ userSchema.methods.changedPassword = function(JWTTimestamp) {
 
     return false;
 }
+
+userSchema.pre('save', function(next) {
+    if (this.isNew) {
+        this.createdAt = Date.now();
+    }
+    next();
+});
 
 userSchema.pre('save', function(next) {
     if (!this.isModified('password') || this.isNew) {
