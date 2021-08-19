@@ -1,6 +1,7 @@
 const express = require('express');
 
 const authController = require('./../controllers/authController');
+const userController = require('./../controllers/userController');
 
 const router = express.Router();
 
@@ -19,8 +20,11 @@ router.post('/forgotPassword', authController.forgotPassword);
 // Reset password request
 router.post('/resetPassword/:passwordResetToken', authController.resetPassword);
 
+// Get current logged in user
+router.get('/me', authController.protectRoute, userController.getUser);
+
 // FOR TESTING PURPOSE
-router.route('/').get(authController.protectRoute, (req, res, next) => {
+router.route('/').get((req, res, next) => {
     res.status(200).send('Hello');
 });
 

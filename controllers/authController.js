@@ -159,7 +159,10 @@ exports.login = catchAsync(async(req, res, next) => {
         res.status(200).json({
             status: 'success',
             message: 'You have been successfully logged in!',
-            token: token
+            token: token,
+            data: {
+                user: user
+            }
         });
     }
 

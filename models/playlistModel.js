@@ -15,8 +15,8 @@ const playlistSchema = mongoose.Schema({
         type: String,
         required: [true, 'Please specify playlist type.'],
         enum: {
-            values: ['liked', 'public', 'private'],
-            message: 'A playlist must be of one of the following types: liked, public, private'
+            values: ['public', 'private'],
+            message: 'A playlist must be of one of the following types: public, private'
         }
     },
     songs: {
